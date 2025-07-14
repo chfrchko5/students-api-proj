@@ -1,0 +1,5 @@
+.venv/
+.env
+instance/
+app/__pycache__
+students_log/
