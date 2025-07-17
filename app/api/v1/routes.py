@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from app.extensions import db
 from app.model import Student
 
@@ -15,13 +15,16 @@ def get_students():
             "grade": student.grade
         } for student in students
     ]
+    current_app.logger.info('v1 API students table was reached')
+    return jsonify(result), 200
 
-    return jsonify(result)
 
 @api_v1.route("/students/<int:student_id>", methods=["GET"])
 def get_student(student_id):
     student = Student.query.get_or_404(student_id)
-    return jsonify(student.to_dict_v1())
+    current_app.logger.info(f'v1 API student id {student_id} was reached')
+    return jsonify(student.to_dict_v1()), 200
+
 
 @api_v1.route("/students", methods=["POST"])
 def add_student():
@@ -38,6 +41,7 @@ def add_student():
 
     return jsonify(new_student.to_dict_v1()), 201
 
+
 @api_v1.route("/students/<int:student_id>", methods=["PUT"])
 def update_student(student_id):
     data = request.get_json()
@@ -49,8 +53,10 @@ def update_student(student_id):
         student.grade = data.get("grade", student.grade)
 
         db.session.commit()
-        return jsonify(student.to_dict_v1())
+
+        return jsonify(student.to_dict_v1()), 202
     
+
 @api_v1.route("/students/<int:student_id>", methods=["PATCH"])
 def patch_student(student_id):
     student = Student.query.get_or_404(student_id)
@@ -60,7 +66,9 @@ def patch_student(student_id):
         setattr(student, key, value)
 
     db.session.commit()
-    return jsonify(student.to_dict_v1())
+
+    return jsonify(student.to_dict_v1()), 202
+
 
 @api_v1.route("/students/<int:student_id>", methods=["DELETE"])
 def delete_student(student_id):
@@ -69,4 +77,4 @@ def delete_student(student_id):
         db.session.delete(student)
         db.session.commit()
 
-        return jsonify({"message: student deleted "})
+        return jsonify({"message: student deleted "}), 202
