@@ -20,11 +20,11 @@ setup-env:
 	fi
 
 create-log:
-	@if [ ! -f students_log ]; then \
+	@if [ ! -d students_log ]; then \
 		echo "students_log directory not found, creating"; \
 		mkdir students_log; \
 	else \
-		echo "students_log directory already exists"
+		echo "students_log directory already exists"; \
 	fi
 
 install: setup-env create-log $(VENV_DIR)
