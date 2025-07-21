@@ -5,3 +5,7 @@ app/__pycache__
 students_log/
 app/__pycache__
 app/api/*/__pycache__/
+__pycache__/
+.pytest_cache/
+migrations/__pycache__/
+migrations/versions/__pycache__/

@@ -3,6 +3,7 @@ import logging
 from flask import Flask, current_app, jsonify
 from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv # for setting up the env. variable instead of hard coding
+from config import Config
 
 from .extensions import db, migrate 
 from .api.v1.routes import api_v1
@@ -23,7 +24,7 @@ def set_logger():
 
 
 # separate function to create the flask application
-def create_app():
+def create_app(config_object=Config):
     load_dotenv()
     app = Flask(__name__)
 
@@ -31,8 +32,7 @@ def create_app():
     if not app.debug and not app.testing:
         set_logger()
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config.from_object(config_object)
 
     db.init_app(app)
     migrate.init_app(app, db)
