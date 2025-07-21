@@ -4,7 +4,7 @@ VENV_DIR = .venv
 PYTHON = $(VENV_DIR)/bin/python
 PIP = $(VENV_DIR)/bin/pip
 
-.PHONY: all install run help setup-env
+.PHONY: all install run help setup-env db-upgrade
 
 all: install setup-env
 
@@ -26,6 +26,10 @@ create-log:
 	else \
 		echo "students_log directory already exists"; \
 	fi
+
+db-upgrade:
+	@echo "upgrading flask db to create a database"
+	@./.venv/bin/flask db upgrade
 
 install: setup-env create-log $(VENV_DIR)
 	@echo "installing project dependencies"
