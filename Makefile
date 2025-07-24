@@ -1,10 +1,10 @@
-learSHELL := /bin/bash
+SHELL := /bin/bash
 .SHELLFLAGS := -ec
 VENV_DIR = .venv
 PYTHON = $(VENV_DIR)/bin/python
 PIP = $(VENV_DIR)/bin/pip
 
-.PHONY: all install run help setup-env db-upgrade
+.PHONY: all install run help setup-env db-upgrade docker-image
 
 all: install setup-env
 
@@ -40,11 +40,17 @@ run: install
 	@echo "press CTRL + C to exit the app"
 	$(PYTHON) run.py
 
+docker-image:
+	@echo "creating a docker image of the application"
+	docker build -t students-api:0.1.0 .
+
 help:
 	@echo "Available commands:"
-	@echo "  make            - runs make install + setup-env"
-	@echo "  make setup-env  - creates .env with database variable"
-	@echo "  make create-log - creates students_log directory for log collection"
-	@echo "  make db-upgrade - creates and upgrades the database"
-	@echo "  make install    - Installs project dependencies"
-	@echo "  make run        - Runs the application"
+	@echo "  make            	  - runs make install + setup-env"
+	@echo "  make setup-env  	  - creates .env with database variable"
+	@echo "  make create-log 	  - creates students_log directory for log collection"
+	@echo "  make db-upgrade 	  - creates and upgrades the database"
+	@echo "  make install    	  - Installs project dependencies"
+	@echo "  make run             - Runs the application"
+	@echo "  make docker-image    - create a docker image from current configuration;"
+	@echo "                         default naming is 'students-api:0.1.0'"

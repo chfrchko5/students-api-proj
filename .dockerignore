@@ -1,0 +1,8 @@
+__pycachce__/
+.venv/
+instance/
+.env
+.gitignore
+Makefile
+.git
+students_log/*
