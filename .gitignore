@@ -9,3 +9,4 @@ __pycache__/
 .pytest_cache/
 migrations/__pycache__/
 migrations/versions/__pycache__/
+mysql_data/
