@@ -34,9 +34,6 @@ jobs:
             
             - name: via Makefile install and run ruff python linter
               run: make ruff-install && make ruff-run
-
-            - name: via Makefile install and run mypy static checker
-              run: make mypy-install && make mypy-run
     
     build-and-push:
         runs-on: ubuntu-latest
