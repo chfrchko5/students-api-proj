@@ -12,7 +12,7 @@ COPY migrations/ ./migrations/
 COPY tests/ ./tests/
 COPY config.py .
 COPY run.py .
-COPY students_log/ ./students_log/
+COPY students_log/ .
 COPY ./entrypoint.sh .
 
 
