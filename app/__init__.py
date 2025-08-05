@@ -1,4 +1,3 @@
-import os
 import logging
 from flask import Flask, current_app, jsonify
 from logging.handlers import RotatingFileHandler
