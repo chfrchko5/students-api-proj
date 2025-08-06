@@ -13,12 +13,6 @@ on:
             - 'entrypoint.sh'
     
     workflow_dispatch:
-        inputs:
-            image_version:
-                description: 'version number for the docker image in SemVer format'
-                required: true
-                type: string
-                default: '0.1.0'
 
 jobs:
     lint-and-test:
