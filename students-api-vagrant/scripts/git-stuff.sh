@@ -9,8 +9,8 @@ fi
 
 # clone the repo of the project
 cd /home/vagrant
-git clone https://github.com/chfrchko5/students-api-proj.git
+git clone -b dev https://github.com/chfrchko5/students-api-proj.git
 
 # FOR TESTING
 cd /home/vagrant/students-api-proj
-git checkout dev
+#git checkout dev
