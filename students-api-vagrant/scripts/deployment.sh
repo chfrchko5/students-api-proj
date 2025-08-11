@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# change directory to the cloned git repo
-cd /home/vagrant/students-api-proj
-
 # add .env file for database
 cat << EOF > .env
 MYSQL_ROOT_PASSWORD="rootpass"
