@@ -45,7 +45,7 @@ services:
   nginx-lb:
     image: nginx
     ports:
-    - "8080:80"
+    - "8080:8080"
     depends_on:
     - students-api-1
     - students-api-2

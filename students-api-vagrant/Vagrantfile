@@ -86,3 +86,8 @@ end
 Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "scripts/git-stuff.sh"
 end
+
+# runs and deploys the project via docker compose using makefile
+Vagrant.configure("2") do |config|
+  config.vm.provision "shell", path: "scripts/deployment.sh"
+end

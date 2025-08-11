@@ -3,7 +3,14 @@
 # package updates
 sudo apt-get update && sudo apt-get upgrade
 
-# install docker if not present
+# install 'make' if not present
+if which make &> /dev/null; then
+    echo '"make" package is present'
+else
+    sudo apt-get install make
+fi
+
+# install 'docker' if not present
 if which docker &> /dev/null; then
     echo "docker is present"
 else
