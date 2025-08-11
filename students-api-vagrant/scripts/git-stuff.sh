@@ -11,3 +11,5 @@ fi
 cd /home/vagrant
 git clone https://github.com/chfrchko5/students-api-proj.git
 
+# FOR TESTING
+git checkout dev
