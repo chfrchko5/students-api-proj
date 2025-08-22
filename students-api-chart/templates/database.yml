@@ -1,0 +1,112 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.database_name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.database_name }}
+  serviceName: "db"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.database_name }}
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: {{ .Values.database_node }}
+      containers:
+      - name: {{ .Values.database_name }}
+        image: mysql:8.0
+        ports:
+        - containerPort: {{ .Values.database_port }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.database_secret_name }}
+              key: db_root_pass
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.database_secret_name }}
+              key: db_database
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.database_secret_name }}
+              key: db_user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.database_secret_name }}
+              key: db_user_pass
+        volumeMounts:
+        - name: {{ .Values.database_name }}
+          mountPath: "/var/lib/mysql"
+        - name: mysql-config
+          mountPath: "/etc/mysql/conf.d"
+      volumes:
+      - name: {{ .Values.database_name }}
+        persistentVolumeClaim:
+          claimName: db-pv-claim
+      - name: mysql-config
+        configMap:
+          name: mysql-config
+      
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: {{ .Values.database_name }}
+  ports:
+  - port: {{ .Values.database_port }}
+    targetPort: {{ .Values.database_port }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: db-pv
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: ""
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: {{ .Values.volume_path }}
+    type: DirectoryOrCreate
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-pv-claim
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: ""
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+  namespace: {{ .Values.namespace }}
+spec:
+data:
+  my.cnf: |
+    [mysqld]
+    default-authentication-plugin=mysql_native_password

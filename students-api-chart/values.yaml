@@ -1,0 +1,19 @@
+# used in both
+namespace: students-api
+
+# used in application.yaml
+app_name: students-api-app
+app_deployment_name: api-app-deployment
+app_image:
+  repo: chfrchko7/students-api
+  tag: 0.3.0
+app_port: 5000
+app_node: minikube
+
+# used in database.yaml
+database_name: db
+database_node: minikube-m02
+database_port: 3306
+database_secret_name: api-secret
+database_volume: db-volume
+volume_path: /mnt/db_data
