@@ -21,6 +21,15 @@ spec:
         image: "{{ .Values.app_image.repo }}:{{ .Values.app_image.tag }}"
         ports:
         - containerPort: {{ .Values.app_port }}
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Waiting for database...";
+            until nc -z db-service 3306; do
+              echo "Database not ready, sleeping...";
+              sleep 5;
+            done;
+            python run.py
         env:
         - name: DB_HOST
           value: db-service
