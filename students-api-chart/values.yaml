@@ -16,4 +16,4 @@ database_node: minikube-m02
 database_port: 3306
 database_secret_name: api-secret
 database_volume: db-volume
-volume_path: /mnt/db_data
+volume_path: /tmp/hostpath_pv/
