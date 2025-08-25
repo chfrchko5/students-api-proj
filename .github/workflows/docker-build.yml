@@ -18,6 +18,8 @@ on:
 jobs:
     lint-and-test:
         runs-on: ubuntu-latest
+        permissions: write-all
+        
         steps:
             - name: checkout the repo
               uses: actions/checkout@v4
