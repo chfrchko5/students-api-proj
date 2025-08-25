@@ -53,4 +53,4 @@ jobs:
               with:
                 context: .
                 push: true
-                tags: chfrchko7/students-api:0.3.0
+                tags: chfrchko7/students-api:0.1.1
