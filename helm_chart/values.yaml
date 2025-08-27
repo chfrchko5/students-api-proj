@@ -6,7 +6,7 @@ app_name: students-api-app
 app_deployment_name: api-app-deployment
 app_image:
   repo: chfrchko7/students-api
-  tag: 0.3.0
+  tag: 0.5.0
 app_port: 5000
 app_node: minikube
 
