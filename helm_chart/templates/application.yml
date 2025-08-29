@@ -82,6 +82,8 @@ metadata:
   annotations:
     meta.helm.sh/release-name: {{ .Values.namespace }}
     meta.helm.sh/release-namespace: default
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
   backoffLimit: 3
   template:
