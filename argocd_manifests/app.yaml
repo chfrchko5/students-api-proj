@@ -19,3 +19,25 @@ spec:
       selfHeal: True
     syncOptions:
     - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-observability-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/chfrchko5/students-api-proj.git
+    path: helm_chart_observ
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observ
+  syncPolicy:
+    automated:
+      prune: True
+      selfHeal: True
+    syncOptions:
+    - CreateNamespace=true
