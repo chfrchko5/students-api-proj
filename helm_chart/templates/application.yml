@@ -1,4 +1,5 @@
 ---
+# deployment for the python application
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -56,11 +57,14 @@ spec:
               name: {{ .Values.database_secret_name }}
               key: db_uri
 ---
+# service to expose the python app
 apiVersion: v1
 kind: Service
 metadata:
   name: api-app-service
   namespace: {{ .Values.namespace }}
+  labels:
+    app: api-app-service
 spec:
   selector:
     app: {{ .Values.app_name }}
@@ -72,6 +76,7 @@ spec:
     nodePort: 31111
 
 ---
+# job to run db flask migrate before main python deployment
 apiVersion: batch/v1
 kind: Job
 metadata:
