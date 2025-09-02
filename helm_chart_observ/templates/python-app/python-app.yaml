@@ -1,0 +1,15 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: python-app-metrics
+  namespace: students-api
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: api-app-service
+  endpoints:
+  - port: http
+    path: /metrics

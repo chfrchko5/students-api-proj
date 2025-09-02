@@ -17,7 +17,7 @@ spec:
 ---
 # scraping argocd-application-controller pod metrics
 apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
+kind: ServiceMonitor
 metadata:
   name: argocd-application-controller-metrics
   namespace: argocd
@@ -26,22 +26,6 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: argocd-application-controller
+      app.kubernetes.io/name: argocd-applicationset-controller
   endpoints:
   - port: metrics
-
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: python-app-metrics
-  namespace: students-api
-  labels:
-    release: prometheus
-spec:
-  selector:
-    matchLabels:
-      app: api-app-service
-  endpoints:
-  - port: http
-    path: /metrics
