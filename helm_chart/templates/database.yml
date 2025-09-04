@@ -133,6 +133,9 @@ spec:
       containers:
       - name: mysql-exporter
         image: prom/mysqld-exporter
+        volumeMounts:
+        - name: exporter-config
+          mountpath: /home/
         env:
         - name: DATA_SOURCE_NAME
           valueFrom:
@@ -142,6 +145,10 @@ spec:
         ports:
         - name: exporter-port
           containerPort: 9104
+      volumes:
+      - name: exporter-config
+        configMap:
+          name: exporter-config-file
 
 ---
 # one liner to use native pass in mysql
@@ -151,7 +158,7 @@ metadata:
   name: exporter-config-file
   namespace: {{ .Values.namespace }}
 data:
-  my.cnf: |
+  .my.cnf: |
     [client]
     user=exporter
     password=exporter-pass
