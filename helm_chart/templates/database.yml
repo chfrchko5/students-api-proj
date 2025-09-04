@@ -49,8 +49,6 @@ spec:
           mountPath: "/var/lib/mysql"
         - name: mysql-config
           mountPath: "/etc/mysql/conf.d"
-        - name: exporter-creds
-          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: {{ .Values.database_name }}
         persistentVolumeClaim:
