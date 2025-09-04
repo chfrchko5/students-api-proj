@@ -49,6 +49,8 @@ spec:
           mountPath: "/var/lib/mysql"
         - name: mysql-config
           mountPath: "/etc/mysql/conf.d"
+        - name: exporter-creds
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: {{ .Values.database_name }}
         persistentVolumeClaim:
@@ -56,6 +58,9 @@ spec:
       - name: mysql-config
         configMap:
           name: mysql-config
+      - name: exporter-creds
+        configMap:
+          name: mysql-exporter-creds
       
 ---
 # service to expose the db within the cluster
@@ -108,8 +113,37 @@ kind: ConfigMap
 metadata:
   name: mysql-config
   namespace: {{ .Values.namespace }}
-spec:
 data:
   my.cnf: |
     [mysqld]
     default-authentication-plugin=mysql_native_password
+
+---
+# db metrics exporter
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-exporter
+  namespace: students-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-exporter
+  template:
+    metadata:
+      labels:
+        app: mysql-exporter
+    spec:
+      containers:
+      - name: mysql-exporter
+        image: prom/mysqld-exporter
+        env:
+        - name: DATA_SOURCE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.database_secret_name }}
+              key: exporter_uri
+        ports:
+        - name: exporter-port
+          containerPort: 9104

@@ -41,17 +41,5 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  nginx-lb:
-    image: nginx:latest
-    ports:
-    - "8080:8080"
-    depends_on:
-    - students-api-1
-    - students-api-2
-    volumes:
-    - ./nginx-config/load-balancer.conf:/etc/nginx/conf.d/load-balancer.conf
-
-    
 volumes:
   mysql-data:

@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: database-metrics
+  namespace: students-api
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: exporter-service
+  endpoints:
+  - port: db-metrics
+    path: /metrics
+    interval: 15s
