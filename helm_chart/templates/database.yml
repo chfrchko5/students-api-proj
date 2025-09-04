@@ -133,9 +133,11 @@ spec:
       containers:
       - name: mysql-exporter
         image: prom/mysqld-exporter
+        args:
+        - --config.my-cnf=/etc/mysql/my.cnf
         volumeMounts:
         - name: exporter-config
-          mountpath: /home/
+          mountPath: /etc/mysql
         env:
         - name: DATA_SOURCE_NAME
           valueFrom:
@@ -158,7 +160,7 @@ metadata:
   name: exporter-config-file
   namespace: {{ .Values.namespace }}
 data:
-  .my.cnf: |
+  my.cnf: |
     [client]
     user=exporter
     password=exporter-pass
