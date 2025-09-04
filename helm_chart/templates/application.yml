@@ -70,7 +70,8 @@ spec:
     app: {{ .Values.app_name }}
   type: NodePort
   ports:
-  - protocol: TCP
+  - name: http-port
+    protocol: TCP
     port: {{ .Values.app_port }}
     targetPort: {{ .Values.app_port }}
     nodePort: 31111

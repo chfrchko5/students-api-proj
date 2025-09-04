@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/chfrchko5/students-api-proj.git
     path: helm_chart
-    targetRevision: main
+    targetRevision: dev
   destination:
     server: https://kubernetes.default.svc
     namespace: students-api
