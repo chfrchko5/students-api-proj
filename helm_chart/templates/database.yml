@@ -58,9 +58,6 @@ spec:
       - name: mysql-config
         configMap:
           name: mysql-config
-      - name: exporter-creds
-        configMap:
-          name: mysql-exporter-creds
       
 ---
 # service to expose the db within the cluster
