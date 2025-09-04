@@ -119,7 +119,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql-exporter
-  namespace: students-api
+  namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
   selector:
@@ -142,3 +142,16 @@ spec:
         ports:
         - name: exporter-port
           containerPort: 9104
+
+---
+# one liner to use native pass in mysql
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: exporter-config-file
+  namespace: {{ .Values.namespace }}
+data:
+  my.cnf: |
+    [client]
+    user=exporter
+    password=exporter-pass
