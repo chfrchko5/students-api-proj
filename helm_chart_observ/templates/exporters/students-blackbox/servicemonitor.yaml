@@ -16,11 +16,11 @@ spec:
     params:
       module:
       - http_prober
-      - icmp_prober
+      - tcp_prober
     static_configs:
     - targets:
-      - https://www.google.com
-      - https://prometheus.io
+      - http://api-app-service.students-api.svc.cluster.local:5000/healthcheck
+      - http://db-service.students-api.svc.cluster.local:3306
     relabelings:
     - sourceLabels: [__address__]
       targetLabel: __param_target
