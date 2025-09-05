@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: exporter-service
+      app: db-exporter-service
   endpoints:
   - port: db-metrics
     path: /metrics

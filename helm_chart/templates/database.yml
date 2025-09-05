@@ -136,7 +136,7 @@ spec:
         args:
         - --config.my-cnf=/etc/mysql/my.cnf
         volumeMounts:
-        - name: exporter-config
+        - name: db-exporter-config
           mountPath: /etc/mysql
         env:
         - name: DATA_SOURCE_NAME
@@ -145,19 +145,19 @@ spec:
               name: {{ .Values.database_secret_name }}
               key: exporter_uri
         ports:
-        - name: exporter-port
+        - name: db-exporter-port
           containerPort: 9104
       volumes:
-      - name: exporter-config
+      - name: db-exporter-config
         configMap:
-          name: exporter-config-file
+          name: db-exporter-config-file
 
 ---
 # one liner to use native pass in mysql
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: exporter-config-file
+  name: db-exporter-config-file
   namespace: {{ .Values.namespace }}
 data:
   my.cnf: |

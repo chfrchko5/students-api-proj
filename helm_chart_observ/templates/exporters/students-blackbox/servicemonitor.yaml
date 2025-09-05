@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: blackbox-exporter-metrics
+  namespace: observ
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: blackbox-exporter-service
+  endpoints:
+  - port: blackbox-metrics
+    path: /probe
+    interval: 15s
+    params:
+      module:
+      - http_prober
+      - icmp_prober
+    static_configs:
+    - targets:
+      - https://www.google.com
+      - https://prometheus.io
+    relabelings:
+    - sourceLabels: [__address__]
+      targetLabel: __param_target
+    - sourceLabels: [__param_target]
+      targetLabel: instance
+    - targetLabel: __address__
+      replacement: blackbox-exporter.observ.svc.cluster.local:9115

@@ -1,0 +1,53 @@
+---
+# deployment to set up blackbox exporter
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blackbox-exporter
+  namespace: observ
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blackbox-exporter
+  template:
+    metadata:
+      labels:
+        app: blackbox-exporter
+    spec:
+      containers:
+      - name: blackbox-exporter
+        image: prom/blackbox-exporter
+        ports:
+        - containerPort: 9115
+        args:
+        - --config.file=/etc/blackbox-exporter/config.yaml
+        volumeMounts:
+        - name: blackbox-config
+          mountPath: /etc/blackbox-exporter
+      volumes:
+      - name: blackbox-config
+        configMap:
+          name: blackbox-exporter-config
+
+---
+# configmap for blackbox exporter
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blackbox-exporter-config
+  namespace: observ
+data:
+  config.yaml: |
+    modules:
+      http_prober:
+        prober: http
+        timeout: 5s
+        http:
+          valid_status_codes: [200, 204]
+      icmp_prober:
+        prober: icmp
+        timeout: 5s
+        icmp:
+          preferred_ip_protocol: "ip4"
+          source_ip_address: "127.0.0.1"
