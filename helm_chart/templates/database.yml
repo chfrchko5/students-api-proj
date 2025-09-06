@@ -44,11 +44,23 @@ spec:
             secretKeyRef:
               name: {{ .Values.database_secret_name }}
               key: db_user_pass
+        - name: EXPORTER_USER
+          valueFrom:
+              secretKeyRef:
+                name: {{ .Values.database_secret_name }}
+                key: exporter_user
+        - name: EXPORTER_PASS
+          valueFrom:
+              secretKeyRef:
+                name: {{ .Values.database_secret_name }}
+                key: exporter_pass
         volumeMounts:
         - name: {{ .Values.database_name }}
           mountPath: "/var/lib/mysql"
         - name: mysql-config
           mountPath: "/etc/mysql/conf.d"
+        - name: db-exporter-user-script
+          mountPath: "/docker-entrypoint-initdb.d/"
       volumes:
       - name: {{ .Values.database_name }}
         persistentVolumeClaim:
@@ -56,6 +68,10 @@ spec:
       - name: mysql-config
         configMap:
           name: mysql-config
+      - name: db-exporter-user-script
+        configMap:
+          name: db-exporter-user-script
+          defaultMode: 0755
       
 ---
 # service to expose the db within the cluster
@@ -145,7 +161,7 @@ spec:
               name: {{ .Values.database_secret_name }}
               key: exporter_uri
         ports:
-        - name: db-exporter-port
+        - name: db-metrics
           containerPort: 9104
       volumes:
       - name: db-exporter-config
@@ -153,7 +169,6 @@ spec:
           name: db-exporter-config-file
 
 ---
-# one liner to use native pass in mysql
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -164,3 +179,19 @@ data:
     [client]
     user=exporter
     password=exporter-pass
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: db-exporter-user-script
+  namespace: {{ .Values.namespace }}
+data:
+  exporter-user-script.sh: |
+    #!/bin/bash
+    set -e
+    cat <<EOF | mysql -u root -p "$MYSQL_ROOT_PASSWORD"
+    CREATE USER IF NOT EXISTS '${EXPORTER_USER}'@'localhost' IDENTIFIED BY '${EXPORTER_PASS}' WITH MAX_USER_CONNECTIONS 3;
+    GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO '${EXPORTER_USER}'@'localhost';
+    FLUSH PRIVILEGES;
+    EOF

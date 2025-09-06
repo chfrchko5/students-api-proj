@@ -20,6 +20,7 @@ spec:
         image: prom/blackbox-exporter
         ports:
         - containerPort: 9115
+          name: bbox-metrics
         args:
         - --config.file=/etc/blackbox-exporter/config.yaml
         volumeMounts:

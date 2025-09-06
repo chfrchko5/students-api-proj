@@ -10,7 +10,7 @@ spec:
     matchLabels:
       app: blackbox-exporter-service
   endpoints:
-  - port: blackbox-metrics
+  - port: bbox-metrics
     path: /probe
     interval: 15s
     params:
