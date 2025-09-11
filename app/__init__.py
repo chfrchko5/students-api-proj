@@ -3,6 +3,7 @@ from flask import Flask, current_app, jsonify
 from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv # for setting up the env. variable instead of hard coding
 from config import Config
+import sys
 
 from .extensions import db, migrate 
 from .api.v1.routes import api_v1
@@ -14,12 +15,17 @@ def set_logger():
     root_logger.setLevel(logging.INFO)
 
     if not root_logger.handlers:
-        handler = RotatingFileHandler('students_log/students_api.log', maxBytes=10240, backupCount=5)
+        file_handler = RotatingFileHandler('students_log/students_api.log', maxBytes=10240, backupCount=5)
         log_format = logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
         )
-        handler.setFormatter(log_format)
-        root_logger.addHandler(handler)
+        file_handler.setFormatter(log_format)
+        root_logger.addHandler(file_handler)
+
+        stream_handler = logging.StreamHandler(sys.stdout)
+        stream_handler.setFormatter(log_format)
+        root_logger.addHandler(stream_handler)
+
 
 
 # separate function to create the flask application
