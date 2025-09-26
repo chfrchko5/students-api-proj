@@ -123,3 +123,67 @@ spec:
       {{- end }}
 {{- end }}
 {{- end }}
+      # CPU Alert
+    - alert: HighCPUUsage
+      expr: 100 * (1 - avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 80
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High CPU Utilization"
+        
+      # Disk Alert
+    - alert: HighDiskUsage
+      expr: (node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} 
+            - node_filesystem_free_bytes{fstype!~"tmpfs|overlay"})
+            / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} > 0.85
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High Disk Utilization"
+        
+      # Alert for database pod Restarts
+    - alert: DBPodRestart
+      expr: increase(kube_pod_container_status_restarts_total{namespace="students-api", pod="db-0"}[5m]) > 0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "database pod in students-api namespace restarted"
+        
+      # Alert
+    - alert: ArgoCDRestart
+      expr: increase(kube_pod_container_status_restarts_total{namespace="argocd", pod=~"argocd-server.*"}[5m]) > 0
+      for: 1m
+      labels:
+        severity: warning
+      annotations:
+        summary: "argocd server has been restarted"
+        
+      # Alert for Python app requests
+    - alert: PythonAppRequests
+      expr: rate(flask_http_request_total[5m]) > 100
+      for: 1m
+      labels:
+        severity: warning
+      annotations:
+        summary: "python application receives a lot of requests in a short period of time"
+        
+      # Alert for server side errors of the python application
+    - alert: PythonAppErrors
+      expr: increase(flask_http_request_total{status=~"5.."}[10m]) > 10
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "there are more than 10 errors in the last 10 minutes"
+        
+      # Alert for p95 latency
+    - alert: p95latency
+      expr: histogram_quantile(0.95, sum(rate(flask_http_request_duration_seconds_bucket[5m])) by (le)) > 3
+      for: 3m
+      labels:
+        severity: warning
+      annotations:
+        summary: "requests with severe latency over the last 5 minutes"
