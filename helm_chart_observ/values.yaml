@@ -4370,7 +4370,22 @@ prometheus:
     ## The scrape configuration example below will find master nodes, provided they have the name .*mst.*, relabel the
     ## port to 2379 and allow etcd scraping provided it is running on all Kubernetes master nodes
     ##
-    additionalScrapeConfigs: []
+    additionalScrapeConfigs:
+    - job_name: 'blackbox-exporter-metrics'
+      metrics_path: /probe
+      params:
+        module: [http_prober, tcp_prober]
+      static_configs:
+        - targets:
+          - http://api-app-service.students-api.svc.cluster.local:5000
+          - http://api-app-service.students-api.svc.cluster.local:5000/healthcheck
+      relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: "blackbox-exporter.observ.svc:9115" 
     # - job_name: kube-etcd
     #   kubernetes_sd_configs:
     #     - role: node

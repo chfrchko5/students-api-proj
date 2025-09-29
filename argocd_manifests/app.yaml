@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argo-students-app
+  name: argo-students-app-stack
   namespace: argocd
 spec:
   project: default
@@ -12,7 +12,27 @@ spec:
     targetRevision: dev
   destination:
     server: https://kubernetes.default.svc
-    namespace: students-api
+  syncPolicy:
+    automated:
+      prune: True
+      selfHeal: True
+    syncOptions:
+    - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-observ-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/chfrchko5/students-api-proj.git
+    path: helm_chart_observ
+    targetRevision: dev
+  destination:
+    server: https://kubernetes.default.svc
   syncPolicy:
     automated:
       prune: True
