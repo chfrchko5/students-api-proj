@@ -8,7 +8,7 @@ metadata:
     app: db-exporter-service
 spec:
   selector:
-    app: mysql-exporter
+    app: db
   ports:
   - name: db-metrics
     port: 9104
