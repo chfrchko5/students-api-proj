@@ -60,6 +60,8 @@ spec:
           mountPath: "/var/lib/mysql"
         - name: mysql-config
           mountPath: "/etc/mysql/conf.d"
+        - name: exporter-creds-script
+          mountPath: "/docker-entrypoint-initdb.d"
       - name: mysql-exporter
         image: prom/mysqld-exporter
         args:
@@ -67,12 +69,6 @@ spec:
         ports:
         - name: db-metrics
           containerPort: 9104
-        env:
-        - name: DATA_SOURCE_NAME
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.database_secret_name }}
-              key: exporter_uri
         volumeMounts:
         - name: exporter-config
           mountPath: /etc/mysql
@@ -86,6 +82,9 @@ spec:
       - name: exporter-config
         configMap:
           name: exporter-config
+      - name: exporter-creds-script
+        configMap:
+          name: exporter-creds-script
       
 ---
 # service to expose the db within the cluster
@@ -157,3 +156,16 @@ data:
     password=exporter-pass
     port=3306
     host=db-service
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: exporter-creds-script
+  namespace: {{ .Values.namespace }}
+data:
+  creds.sh: |
+    #!/bin/bash
+    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE USER IF NOT EXISTS '$EXPORTER_USER'@'%' IDENTIFIED BY '$EXPORTER_PASS' WITH MAX_USER_CONNECTIONS 3;"
+    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO '$EXPORTER_USER'@'%';"
+    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "FLUSH PRIVILEGES;"
