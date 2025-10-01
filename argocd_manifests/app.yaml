@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/chfrchko5/students-api-proj.git
     path: helm_chart
-    targetRevision: dev
+    targetRevision: main
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
@@ -30,7 +30,7 @@ spec:
   source:
     repoURL: https://github.com/chfrchko5/students-api-proj.git
     path: helm_chart_observ
-    targetRevision: dev
+    targetRevision: main
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
