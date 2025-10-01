@@ -1,5 +1,5 @@
 services:
-  students-api-1:
+  students-api:
     build: .
     restart: on-failure
     ports:
@@ -11,20 +11,6 @@ services:
       - ./students_log:/students_log
     environment:
       DATABASE_URI: "mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}"
-
-  students-api-2:
-    build: .
-    restart: on-failure
-    ports:
-      - "8082:5000"
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - ./students_log:/students_log
-    environment:
-      DATABASE_URI: "mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}"
-    
 
   db:
     image: mysql:8.0
