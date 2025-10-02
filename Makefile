@@ -1,93 +1,43 @@
 include make_tasks/*.mk
 
-SHELL := /bin/bash
-.SHELLFLAGS := -ec
-VENV_DIR = .venv
-PYTHON = $(VENV_DIR)/bin/python
-PIP = $(VENV_DIR)/bin/pip
+.PHONY: setup-env compose compose-down migrate upgrade app-cli
 
-.PHONY: all install run help setup-env db-upgrade $(VENV_DIR) local-migrate local-upgrade
-
-# running 'make' will run these:
-all: install setup-env
-
-
-# set up a virtual environment
-$(VENV_DIR):
-	python3 -m venv $(VENV_DIR)
-
-
-# if env variable for LOCAL IN-APP database doesnt exist
-# then create and insert it inside
 setup-env:
 	@if [ ! -f .env ]; then \
 		echo "--> .env file not found. Creating a new one."; \
 		echo 'DATABASE_URI="sqlite:///students.db"' > .env; \
 	else \
-		echo "--> .env file already exists. Skipping creation."; \
+		echo "--> .env file already exists."; \
 	fi
 
+compose: setup-env
+	@echo "running docker compose up to boot up dev environment for the app in detached mode"
+	@echo "application's directories and files are mounted to the container for real time development"
+	docker compose up -d
 
-# if directory for students_log doesnt exist then create
-# need it for app to run and work, storing logs inside
-create-log:
-	@if [ ! -d students_log ]; then \
-		echo "students_log directory not found, creating"; \
-		mkdir students_log; \
-	else \
-		echo "students_log directory already exists"; \
-	fi
+compose-down:
+	@echo "shutting docker compose containers down"
+	docker compose down
 
+migrate:
+	@echo "run database migration inside the container"
+	@echo "for committing changes made in 'app/model.py'"
+	docker compose exec db flask db migrate -m "$()"
 
-# run db upgrade to update the db table
-db-upgrade:
-	@echo "upgrading flask db to create a database"
-	@./.venv/bin/flask db upgrade
+upgrade:
+	@echo "to apply database migrations inside the container"
+	@echo "for applying changes saved by migration"
+	docker compose exec db flask db upgrade
 
-
-# install project requirements
-install: setup-env create-log db-upgrade $(VENV_DIR)
-	@echo "installing project dependencies"
-	$(PIP) install -r requirements.txt
-
-
-# if ran standalone, then first the install part will run
-# then the app itself
-run: install
-	@echo "running the application"
-	@echo "press CTRL + C to exit the app"
-	$(PYTHON) run.py
-
-
-local-migrate:
-	@echo "running 'flask db migrate' on the local sqlite database instance"
-	flask db migrate -m "$()"
-
-local-upgrade:
-	@echo "running 'flask db upgrade' on the local sqlite database instance"
-	flask db upgrade
-
+app-cli:
+	@echo "entering cli mode for the api container"
+	docker compose exec students-api sh
 
 # help for commands
 help:
-	@echo "Available commands:"
-	@echo "------- LOCAL SETUP -------"
-	@echo "  make            	  - installs and runs the app locally"
-	@echo "  make setup-env  	  - creates .env with database variable"
-	@echo "  make create-log 	  - creates students_log directory for log collection"
-	@echo "  make db-upgrade 	  - creates and upgrades the database"
-	@echo "  make install    	  - installs project dependencies"
-	@echo "  make run 	          - runs the application"
-
-	@echo ""
-
-	@echo "------- CONTAINER SETUP -------"
-	@echo "  make docker-image    - create a docker image from current configuration;"
-	@echo "                         default naming is 'students-api:0.1.0'"
-	@echo "  make compose         - run both db and api containers via docker compose"
-	@echo "  make local-migrate   - run local migration of the database"
-	@echo "  make local-upgrade   - run local upgrade of the database"
-	@echo "  make docker-migrate  - run database migration in db docker container via docker compose"
-	@echo "  make docker-upgrade  - run database upgrade in db docker container via docker compose"
-	@echo "  make db-cli          - enter cli mode for db container"
-	@echo "  make api-cli         - enter cli mode for api container"
+	@echo "  make setup-env       - create environment variables for development"
+	@echo "  make compose         - boot up the application for developing"
+	@echo "  make compose-down    - shut down the application"
+	@echo "  make migrate         - commit changes made in model.py"
+	@echo "  make upgrade         - apply the changes made to database"
+	@echo "  make app-cli         - enter cli in the application"
