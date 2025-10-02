@@ -4,7 +4,7 @@ include make_tasks/*.mk
 
 setup-env:
 	@if [ ! -f .env ]; then \
-		echo "--> .env file not found. Creating a new onea."; \
+		echo "--> .env file not found. Creating a new one."; \
 		echo 'DATABASE_URI="sqlite:///students.db"' > .env; \
 	else \
 		echo "--> .env file already exists. Skipping creation."; \
