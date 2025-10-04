@@ -1,6 +1,9 @@
 include make_tasks/*.mk
 
-.PHONY: setup-env compose compose-down migrate upgrade app-cli
+# main Makefile for setting up local development environment
+# uses docker compose
+
+.PHONY: setup-env compose compose-down migrate upgrade app-cli help-local
 
 setup-env:
 	@if [ ! -f .env ]; then \
@@ -22,19 +25,19 @@ compose-down:
 migrate:
 	@echo "run database migration inside the container"
 	@echo "for committing changes made in 'app/model.py'"
-	docker compose exec db flask db migrate -m "$()"
+	docker compose exec students-api flask db migrate -m "$()"
 
 upgrade:
 	@echo "to apply database migrations inside the container"
 	@echo "for applying changes saved by migration"
-	docker compose exec db flask db upgrade
+	docker compose exec students-api flask db upgrade
 
 app-cli:
 	@echo "entering cli mode for the api container"
 	docker compose exec students-api sh
 
-# help for commands
-help:
+# help for commands to locally install project in docker environment
+help-local:
 	@echo "  make setup-env       - create environment variables for development"
 	@echo "  make compose         - boot up the application for developing"
 	@echo "  make compose-down    - shut down the application"
